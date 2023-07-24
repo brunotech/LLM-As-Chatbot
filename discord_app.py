@@ -38,13 +38,13 @@ max_response_length = 2000
 async def build_prompt_and_reply(executor, user_name, user_id):
     other_job_on_progress = False
     loop = asyncio.get_running_loop()
-    
+
     print(queue.qsize())
     msg = await queue.get()
     user_msg, user_args = parse_req(
         msg.content.replace(f"@{user_name} ", "").replace(f"<@{user_id}> ", ""), global_vars.gen_config
     )
-    
+
     if user_msg == "help":
         await msg.channel.send(helps.get_help())
     elif user_msg == "model-info":
@@ -101,14 +101,10 @@ async def build_prompt_and_reply(executor, user_name, user_id):
 
                     logs = ""
                     for step_result, step_ppm, step_msg in URLSearchStrategy(searcher)(ppm, urls, top_k=8):
-                        if step_result is True:
-                            ppm = step_ppm
-                            logs = logs + step_msg + "\n"
-                            await progress_msg.edit(content=logs, suppress=True)
-                        else:
-                            ppm = step_ppm
-                            logs = logs + step_msg + "\n"
-                            await progress_msg.edit(content=logs, suppress=True)
+                        ppm = step_ppm
+                        logs = logs + step_msg + "\n"
+                        await progress_msg.edit(content=logs, suppress=True)
+                        if step_result is not True:
                             await asyncio.sleep(2)
                             break
 
@@ -123,7 +119,7 @@ async def build_prompt_and_reply(executor, user_name, user_id):
             if len(response) >= max_response_length:
                 response = response[:max_response_length]
 
-            if other_job_on_progress is True:
+            if other_job_on_progress:
                 await progress_msg.delete()
 
             await msg.reply(response, mention_author=False)

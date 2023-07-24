@@ -1,5 +1,5 @@
 def get_help():
-    help_msg = """Type one of the following for more information about this chatbot
+    return """Type one of the following for more information about this chatbot
 - **`help`:** list of supported commands
 - **`model-info`:** get currently selected model card
 - **`default-params`:** get default parameters of the Generation Config
@@ -14,19 +14,16 @@ You can start conversation by metioning the chatbot `@{chatbot name} {your promp
 
 If you want to continue conversation based on past conversation histories, you can simply `reply` to chatbot's message. At this time, you don't need to metion its name. However, you need to specify options in every turn. For instance, if you want to `reply` based on internet search information, then you shoul specify `--internet` in your message.
 """
-    return help_msg
     
 def get_model_info(model_name, model_infos):
     selected_model_info = model_infos[model_name]
-    help_msg = f"""## {model_name}
+    return f"""## {model_name}
 - **Description:** {selected_model_info['desc']}
 - **Number of parameters:** {selected_model_info['parameters']}
 - **Hugging Face Hub (base):** {selected_model_info['hub(base)']}
 - **Hugging Face Hub (ckpt):** {selected_model_info['hub(ckpt)']}
 """
-    return help_msg
     
     
 def get_default_params(gen_config, max_windows):
-    help_msg = f"""{gen_config}, max-windows = {max_windows}"""
-    return help_msg
+    return f"""{gen_config}, max-windows = {max_windows}"""

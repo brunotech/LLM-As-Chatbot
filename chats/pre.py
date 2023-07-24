@@ -7,34 +7,30 @@ from transformers import GenerationConfig
 
 def contains_image_markdown(string):
     regex = re.compile(r'!\[(.*?)\]\((.*?)\)')
-    match = regex.search(string)
-    return match
+    return regex.search(string)
 
 def build_model_inputs(prompt, return_token_type_ids):
-    model_inputs = global_vars.tokenizer(
-        [prompt], 
+    return global_vars.tokenizer(
+        [prompt],
         return_tensors="pt",
-        return_token_type_ids=return_token_type_ids
+        return_token_type_ids=return_token_type_ids,
     ).to(global_vars.device)
-    return model_inputs
 
 def build_streamer(
     timeout=20.,
     skip_prompt=True,
     skip_special_tokens=True
 ):
-    if global_vars.device == "cpu" or \
-        global_vars.device == "mps":
+    if global_vars.device in ["cpu", "mps"]:
         timeout=100000.
         print(f"timeout set to {timeout}")
-    
-    streamer = TextIteratorStreamer(
-        global_vars.tokenizer, 
-        timeout=timeout, 
+
+    return TextIteratorStreamer(
+        global_vars.tokenizer,
+        timeout=timeout,
         skip_prompt=skip_prompt,
-        skip_special_tokens=skip_special_tokens
+        skip_special_tokens=skip_special_tokens,
     )
-    return streamer
 
 
 def build_gen_config(
@@ -67,7 +63,7 @@ def build_gen_kwargs(
         streamer=streamer,
         stopping_criteria=stopping_criteria
     )
-    gen_kwargs.update(gen_config)
+    gen_kwargs |= gen_config
     return gen_kwargs 
 
 def start_gen(gen_kwargs):

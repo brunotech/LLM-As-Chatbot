@@ -167,15 +167,20 @@ def byom_load(
 ):  
     # mode_cpu, model_mps, mode_8bit, mode_4bit, mode_full_gpu
     global_vars.initialize_globals_byom(
-        base, ckpt, model_cls, tokenizer_cls,
-        bos_token_id, eos_token_id, pad_token_id, 
-        True if load_mode == "cpu" else False,
-        True if load_mode == "apple silicon" else False,
-        True if load_mode == "8bit" else False,
-        True if load_mode == "4bit" else False,
-        True if load_mode == "gpu(half)" else False,
+        base,
+        ckpt,
+        model_cls,
+        tokenizer_cls,
+        bos_token_id,
+        eos_token_id,
+        pad_token_id,
+        load_mode == "cpu",
+        load_mode == "apple silicon",
+        load_mode == "8bit",
+        load_mode == "4bit",
+        load_mode == "gpu(half)",
     )
-    
+
     return (
         ""
     )
@@ -272,7 +277,7 @@ def download_completed(
     force_download,
 ):
     global local_files_only
-    
+
     tmp_args = types.SimpleNamespace()
     tmp_args.base_url = model_base.split(":")[-1].split("</p")[0].strip()
     tmp_args.ft_ckpt_url = model_ckpt.split(":")[-1].split("</p")[0].strip()
@@ -280,19 +285,19 @@ def download_completed(
     tmp_args.gen_config_summarization_path = gen_config_sum_path
     tmp_args.force_download_ckpt = force_download
     tmp_args.thumbnail_tiny = thumbnail_tiny
-    
-    tmp_args.mode_cpu = True if load_mode == "cpu" else False
-    tmp_args.mode_mps = True if load_mode == "apple silicon" else False
-    tmp_args.mode_8bit = True if load_mode == "gpu(load_in_8bit)" else False
-    tmp_args.mode_4bit = True if load_mode == "gpu(load_in_4bit)" else False
-    tmp_args.mode_full_gpu = True if load_mode == "gpu(half)" else False
+
+    tmp_args.mode_cpu = load_mode == "cpu"
+    tmp_args.mode_mps = load_mode == "apple silicon"
+    tmp_args.mode_8bit = load_mode == "gpu(load_in_8bit)"
+    tmp_args.mode_4bit = load_mode == "gpu(load_in_4bit)"
+    tmp_args.mode_full_gpu = load_mode == "gpu(half)"
     tmp_args.local_files_only = local_files_only
-    
+
     try:
         global_vars.initialize_globals(tmp_args)
     except RuntimeError as e:
         raise gr.Error("GPU memory is not enough to load this model.")
-        
+
     return "Download completed!"
 
 def move_to_third_view():  

@@ -8,7 +8,7 @@ from chats import pre, post
 
 def build_prompts(ppmanager, global_context, win_size=3):
     dummy_ppm = copy.deepcopy(ppmanager)
-    
+
     dummy_ppm.ctx = global_context
     for pingpong in dummy_ppm.pingpongs:
         pong = pingpong.pong
@@ -17,11 +17,10 @@ def build_prompts(ppmanager, global_context, win_size=3):
             pre.contains_image_markdown(first_sentence):
             pong = ' '.join(pong.split("\n")[1:]).strip()
             pingpong.pong = pong
-            
+
     lws = CtxLastWindowStrategy(win_size)
-    
-    prompt = lws(dummy_ppm)
-    return prompt
+
+    return lws(dummy_ppm)
 
 def text_stream(ppmanager, streamer):
     count = 0

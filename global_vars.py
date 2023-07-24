@@ -10,19 +10,18 @@ from models import byom
 
 cuda_availability = False
 available_vrams_gb = 0
-mps_availability = False
-
 if torch.cuda.is_available():
     cuda_availability = True
-    available_vrams_mb = sum(
-        [
-            torch.cuda.get_device_properties(i).total_memory 
+    available_vrams_mb = (
+        sum(
+            torch.cuda.get_device_properties(i).total_memory
             for i in range(torch.cuda.device_count())
-        ]
-    ) / 1024. / 1024
-    
-if torch.backends.mps.is_available():
-    mps_availability = True
+        )
+        / 1024.0
+        / 1024
+    )
+
+mps_availability = bool(torch.backends.mps.is_available())
  
 def initialize_globals_byom(
     base, ckpt, model_cls, tokenizer_cls, 
@@ -198,21 +197,23 @@ def initialize_globals(args):
     stream_model = model
         
 def get_load_model(model_type):
-    if model_type == "alpaca" or \
-        model_type == "alpaca-gpt4" or \
-        model_type == "llama-deus" or \
-        model_type == "nous-hermes" or \
-        model_type == "lazarus" or \
-        model_type == "chronos" or \
-        model_type == "wizardlm" or \
-        model_type == "openllama" or \
-        model_type == "orcamini" or \
-        model_type == "llama2" or \
-        model_type == "upstage-llama":
+    if model_type in [
+        "alpaca",
+        "alpaca-gpt4",
+        "llama-deus",
+        "nous-hermes",
+        "lazarus",
+        "chronos",
+        "wizardlm",
+        "openllama",
+        "orcamini",
+        "llama2",
+        "upstage-llama",
+    ]:
         return alpaca.load_model
     elif model_type == "free-willy":
         return freewilly.load_model
-    elif model_type == "stablelm" or model_type == "os-stablelm":
+    elif model_type in ["stablelm", "os-stablelm"]:
         return stablelm.load_model
     elif model_type == "koalpaca-polyglot":
         return koalpaca.load_model
@@ -232,13 +233,11 @@ def get_load_model(model_type):
         return wizard_coder.load_model
     elif model_type == "mpt":
         return mpt.load_model
-    elif model_type == "redpajama" or \
-        model_type == "redpajama-instruct":
+    elif model_type in ["redpajama", "redpajama-instruct"]:
         return redpajama.load_model
     elif model_type == "vicuna":
         return vicuna.load_model
-    elif model_type == "evolinstruct-vicuna" or \
-        model_type == "wizard-vicuna":
+    elif model_type in ["evolinstruct-vicuna", "wizard-vicuna"]:
         return alpaca.load_model
     elif model_type == "alpacoom":
         return bloom.load_model
@@ -246,7 +245,7 @@ def get_load_model(model_type):
         return baize.load_model
     elif model_type == "guanaco":
         return guanaco.load_model
-    elif model_type == "falcon" or model_type == "wizard-falcon":
+    elif model_type in ["falcon", "wizard-falcon"]:
         return falcon.load_model
     elif model_type == "replit-instruct":
         return replit.load_model

@@ -16,11 +16,12 @@ def load_model(
     local_files_only
 ):
     tokenizer = AutoTokenizer.from_pretrained(
-        base, local_files_only=local_files_only,
-        use_fast=False if global_vars.model_type == "stable-vicuna" else True, 
+        base,
+        local_files_only=local_files_only,
+        use_fast=global_vars.model_type != "stable-vicuna",
     )
     tokenizer.padding_side = "left"
-    
+
     if mode_cpu:
         print("cpu mode")
         model = AutoModelForCausalLM.from_pretrained(
@@ -29,7 +30,7 @@ def load_model(
             use_safetensors=False,
             local_files_only=local_files_only
         )
-            
+
     elif mode_mps:
         print("mps mode")
         model = AutoModelForCausalLM.from_pretrained(
@@ -39,7 +40,7 @@ def load_model(
             use_safetensors=False,
             local_files_only=local_files_only
         )
-            
+
     else:
         print("gpu mode")
         print(f"8bit = {mode_8bit}, 4bit = {mode_4bit}")
