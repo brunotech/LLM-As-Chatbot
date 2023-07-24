@@ -62,11 +62,7 @@ def parse_known_flags(string, known_flags_def, gen_config, prefix="--"):
         if word.startswith(prefix):
             flag = word[2:]
             if flag in known_flags:
-                if types[flag] == bool:
-                    flags[flag] = True
-                else:
-                    flags[flag] = None
-
+                flags[flag] = True if types[flag] == bool else None
                 value = words[i+1:i+2]
                 if len(value) != 0:
                     value = value[0]
@@ -80,8 +76,8 @@ def parse_known_flags(string, known_flags_def, gen_config, prefix="--"):
         sub_str = f"{prefix}{k}"
         if v is not None:
             if not isinstance(v, bool):    
-                sub_str = sub_str + " " + str(v)
-        
+                sub_str = f"{sub_str} {str(v)}"
+
         print(sub_str)
         string = string.replace(sub_str, "")
 

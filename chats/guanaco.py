@@ -13,11 +13,8 @@ from chats.utils import build_prompts, text_stream, internet_search
 class StopOnTokens(StoppingCriteria):
     def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor, **kwargs) -> bool:
         stop_token_ids = [0]
-        
-        for stop_id in stop_token_ids:
-            if input_ids[0][-1] == stop_id:
-                return True
-        return False
+
+        return any(input_ids[0][-1] == stop_id for stop_id in stop_token_ids)
 
 def chat_stream(
     idx, local_data, user_message, state,

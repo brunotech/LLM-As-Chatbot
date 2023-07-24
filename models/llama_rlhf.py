@@ -27,14 +27,13 @@ def load_model(
             device_map="auto",
             local_files_only=local_files_only
         )
-        
+
         model = PeftModel.from_pretrained(
             model, 
             finetuned, 
             # force_download=force_download_ckpt,
             device_map={'': 0}
         )
-        return model, tokenizer
     else:
         model = LlamaForCausalLM.from_pretrained(
             base,
@@ -44,13 +43,14 @@ def load_model(
             device_map="auto",
             local_files_only=local_files_only
         )
-        
+
         model = PeftModel.from_pretrained(
             model, 
             finetuned, 
             # force_download=force_download_ckpt,
             torch_dtype=torch.float16
         )
-        model.half()
-        return model, tokenizer        
+        model.half()        
+
+    return model, tokenizer        
 

@@ -24,10 +24,7 @@ class StopOnTokens(StoppingCriteria):
         first = not self._partial_result
         text = self._tokenizer.decode(input_ids[0, -1])
         self._partial_result += text
-        for stop_word in self._stop_words:
-            if stop_word in self._partial_result:
-                return True
-        return False             
+        return any(stop_word in self._partial_result for stop_word in self._stop_words)             
 
 def chat_stream(
     idx, local_data, user_message, state,

@@ -15,19 +15,11 @@ def load_model(
     model_cls,
     tokenizer_cls
 ):
-    if tokenizer_cls is None:
-        tokenizer_cls = AutoTokenizer
-    else:
-        tokenizer_cls = eval(tokenizer_cls)
-    
-    if model_cls is None:
-        model_cls = AutoModelForCausalLM
-    else:
-        model_cls = eval(model_cls)
-
+    tokenizer_cls = AutoTokenizer if tokenizer_cls is None else eval(tokenizer_cls)
+    model_cls = AutoModelForCausalLM if model_cls is None else eval(model_cls)
     print(f"tokenizer_cls: {tokenizer_cls}")
     print(f"model_cls: {model_cls}")
-    
+
     tokenizer = tokenizer_cls.from_pretrained(base)
     tokenizer.padding_side = "left"
 
@@ -39,7 +31,7 @@ def load_model(
             use_safetensors=False
             # low_cpu_mem_usage=True
         )
-        
+
         if finetuned is not None and \
             finetuned != "" and \
             finetuned != "N/A":
@@ -57,7 +49,7 @@ def load_model(
             torch_dtype=torch.float16,
             use_safetensors=False
         )
-        
+
         if finetuned is not None and \
             finetuned != "" and \
             finetuned != "N/A":
@@ -71,7 +63,7 @@ def load_model(
     else:
         print("gpu mode")
         print(f"8bit = {mode_8bit}, 4bit = {mode_4bit}")
-    
+
         model = model_cls.from_pretrained(
             base,
             load_in_8bit=mode_8bit,

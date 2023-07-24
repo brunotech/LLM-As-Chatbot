@@ -47,15 +47,15 @@ class URLSearchStrategy(CtxStrategy):
         ppm.add_pong("![loading](https://i.ibb.co/RPSPL5F/loading.gif)\n")
         ppm.append_pong("• Creating Chroma DB Collection...")
         yield True, ppm, "• Creating Chroma DB Collection √"
-        
+
         chroma_client = chromadb.Client()
         try:
             chroma_client.delete_collection(self.db_name)
         except:
             pass
-        
+
         col = chroma_client.create_collection(self.db_name)
-        
+
         # 2nd yield
         ppm.replace_last_pong("![loading](https://i.ibb.co/RPSPL5F/loading.gif)\n")
         ppm.append_pong("• Creating Chroma DB Collection √\n")
@@ -70,13 +70,13 @@ class URLSearchStrategy(CtxStrategy):
             if parse_result == True:
                 success_urls.append(url)
                 search_results.append(contents)
-                
+
                 ppm.append_pong(f"    - {url} √\n")
                 yield True, ppm, f" ▷ {url} √"
 
-        if len(search_results) == 0:
+        if not search_results:
             yield False, ppm, "There is no valid URLs. Check if there are trailing characters such as .(dot), ,(comma), etc., LLM will answer to your question based on its base knowledge."
-                
+
         if len(' '.join(search_results).split(' ')) < max_tokens:
             final_result = ' '.join(search_results)
 
@@ -90,11 +90,7 @@ class URLSearchStrategy(CtxStrategy):
 
             last_ping = self.instruction.format(ping=last_ping)
             last_ping = last_ping + final_result
-            
-            ppm.pingpongs[-1].ping = last_ping
-            ppm.replace_last_pong("")
-            yield True, ppm, "⏳ Wait until LLM generates message for you ⏳"
-            
+
         else:
             # 3rd yield
             ppm.replace_last_pong("![loading](https://i.ibb.co/RPSPL5F/loading.gif)\n")
@@ -105,7 +101,7 @@ class URLSearchStrategy(CtxStrategy):
             ppm.append_pong("• Creating embeddings...")
             yield True, ppm, "• Creating embeddings √"        
 
-            final_chunks = []            
+            final_chunks = []
             for search_result in search_results:
                 chunks = self._create_chunks(
                     search_result, 
@@ -126,7 +122,7 @@ class URLSearchStrategy(CtxStrategy):
             ppm.append_pong("• Creating Chroma DB Collection √\n")
             ppm.append_pong("• URL Searching √\n")
             for url in success_urls:
-                ppm.append_pong(f"    - {url} √\n")        
+                ppm.append_pong(f"    - {url} √\n")
             ppm.append_pong("• Creating embeddings √\n")
             ppm.append_pong("• Information retrieval...")
             yield True, ppm, "• Information retrieval √"
@@ -140,14 +136,15 @@ class URLSearchStrategy(CtxStrategy):
             ppm.append_pong("• Creating Chroma DB Collection √\n")
             ppm.append_pong("• URL Searching √\n")
             for url in success_urls:
-                ppm.append_pong(f"    - {url} √\n")        
+                ppm.append_pong(f"    - {url} √\n")
             ppm.append_pong("• Creating embeddings √\n")
             ppm.append_pong("• Information retrieval √")
             yield True, ppm, "• Done √"
 
-            ppm.pingpongs[-1].ping = last_ping
-            ppm.replace_last_pong("")
-            yield True, ppm, "⏳ Wait until LLM generates message for you ⏳"
+
+        ppm.pingpongs[-1].ping = last_ping
+        ppm.replace_last_pong("")
+        yield True, ppm, "⏳ Wait until LLM generates message for you ⏳"
 
     def _parse_html(self, url):
         try: 
@@ -183,14 +180,10 @@ class URLSearchStrategy(CtxStrategy):
     
     # chunk_size == number of characters
     def _create_chunks(self, text, chunk_size):
-        chunks = []
-
-        for idx in range(0, len(text), chunk_size):
-            chunks.append(
-                f"passage: {text[idx:idx+chunk_size]}"
-            )
-
-        return chunks
+        return [
+            f"passage: {text[idx:idx + chunk_size]}"
+            for idx in range(0, len(text), chunk_size)
+        ]
     
     def _put_chunk_into_collection(
         self, collection, chunk_id, chunk, docs_per_step=1

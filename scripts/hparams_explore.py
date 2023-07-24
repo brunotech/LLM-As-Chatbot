@@ -33,13 +33,13 @@ for comb in itertools.product(generation_configs['temperature'],
 
   first_columns = [f"gen_txt_{num}" for num in range(num_gens)]
   columns = first_columns + ["temperature", "top_p", "num_beams", "time_delta"]
-  
+
   avg_time_delta = 0
   txt_gens = []
-  for i in range(num_gens):
+  # text generation
+  text = "dummy text"
+  for _ in range(num_gens):
     start = time.time()
-    # text generation
-    text = "dummy text"
     txt_gens.append(text)
 
     # decode outputs
@@ -48,7 +48,7 @@ for comb in itertools.product(generation_configs['temperature'],
     avg_time_delta = avg_time_delta + t_delta
 
   avg_time_delta = round(avg_time_delta / num_gens, 4)
-    
+
   wandb.init(
       project=PROJECT,
       name=f"t@{temperature}-tp@{top_p}-nb@{num_beams}",
